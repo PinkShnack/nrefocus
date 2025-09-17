@@ -57,6 +57,7 @@ docs/_build/
 *.yml~
 *.rst~
 
+_version.py
 _version_save.py
 .env
 venv*

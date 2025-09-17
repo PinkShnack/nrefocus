@@ -1,0 +1,51 @@
+[build-system]
+requires = [
+    # for version management
+    "setuptools>=45", "setuptools_scm[toml]>=6.2"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nrefocus"
+description = "numerical focusing (refocusing, autofocusing) of complex wave fields"
+authors = [
+    {name="Paul Müller", email="dev@craban.de"},
+    {name="Eoghan O'Connell", email="eoclives@hotmail.com"},
+]
+dynamic = ["version"]
+readme = "README.rst"
+license = {text = "BSD (3 clause)"}
+dependencies=[
+    "lmfit",
+    "numexpr",
+    "numpy>=1.5.1",
+]
+requires-python=">=3.6, <4"
+keywords=[
+    "autofocus",
+    "refocus",
+    "numerical focusing",
+    "quantitative phase imaging",
+    "digital holographic microscopy",
+]
+classifiers=[
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research"
+]
+
+[project.optional-dependencies]
+FFTW = ["pyfftw>=0.12.0"]
+
+[project.urls]
+Repository = "https://github.com/RI-imaging/nrefocus"
+Documentation = "https://nrefocus.readthedocs.io/en/stable/"
+Changelog = "https://github.com/RI-imaging/nrefocus/blob/master/CHANGELOG"
+
+[tool.setuptools]
+packages = ["nrefocus"]
+include-package-data = true
+
+[tool.setuptools_scm]
+write_to = "./nrefocus/_version.py"
+version_scheme = "post-release"
