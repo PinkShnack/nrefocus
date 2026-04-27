@@ -236,8 +236,12 @@ class Refocus(ABC):
         twopi = 2 * xp.pi
 
         km = twopi * nm / res
-        kx = (xp.fft.fftfreq(self.fft_origin.shape[0]) * twopi).reshape(-1, 1)
-        ky = (xp.fft.fftfreq(self.fft_origin.shape[1]) * twopi).reshape(1, -1)
+        # Spatial axes are always the last two axes: (..., y, x).
+        # This allows refocusing batched stacks such as (n, y, x).
+        ny = self.fft_origin.shape[-2]
+        nx = self.fft_origin.shape[-1]
+        kx = (xp.fft.fftfreq(ny) * twopi).reshape(-1, 1)
+        ky = (xp.fft.fftfreq(nx) * twopi).reshape(1, -1)
         fstemp = self._evaluate_kernel(kx, ky, km, d)
         return fstemp
 

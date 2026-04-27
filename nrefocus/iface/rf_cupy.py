@@ -42,7 +42,8 @@ class RefocusCupy(Refocus):
         if padding:
             field_gpu = pad.pad_add(field_gpu)
         with sp.fft.set_backend(cufft):
-            return sp.fft.fft2(field_gpu)
+            # Allow stacks shaped (..., y, x) by transforming the last axes.
+            return sp.fft.fft2(field_gpu, axes=(-2, -1))
 
     def propagate(self, distance):
         if not xp.is_cupy():
@@ -56,7 +57,7 @@ class RefocusCupy(Refocus):
         fft_gpu = xp.asarray(self.fft_origin * fft_kernel)
 
         with sp.fft.set_backend(cufft):
-            refoc = sp.fft.ifft2(fft_gpu)
+            refoc = sp.fft.ifft2(fft_gpu, axes=(-2, -1))
         if self.padding:
             refoc = pad.pad_rem(refoc)
         return refoc

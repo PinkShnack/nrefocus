@@ -11,12 +11,13 @@ _cpu_count = mp.cpu_count()
 
 
 def refocus(field, d, nm, res, method="helmholtz", padding=True):
-    """Refocus a 1D or 2D field
+    """Refocus a 1D field or a 2D field / stack of 2D fields
 
     Parameters
     ----------
-    field : 1d or 2d array
-        1D or 2D background corrected electric field (Ex/BEx)
+    field : 1d array or (..., y, x) array
+        Background corrected electric field (Ex/BEx). For stacks, the last
+        two axes are interpreted as spatial axes.
     d : float
         Distance to be propagated in pixels (negative for backwards)
     nm : float
@@ -51,11 +52,11 @@ def refocus(field, d, nm, res, method="helmholtz", padding=True):
     if fshape == 1:
         # 1D field
         rfcls = iface.RefocusNumpy1D
-    elif fshape == 2:
-        # 2D field
+    elif fshape >= 2:
+        # 2D field or stack (..., y, x)
         rfcls = iface.RefocusNumpy
     else:
-        raise AssertionError("Dimension of `field` must be 1 or 2.")
+        raise AssertionError(f"Unexpected dimension of `field` ({fshape}).")
 
     # use a made-up pixel size so we can use the new `Refocus` interface
     pixel_size = 1e-6

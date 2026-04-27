@@ -68,20 +68,49 @@ def pad_add(av, size=None, stlen=10):
         Padded array `av` with pads appended to right and bottom.
     """
     if size is None:
-        size = list()
-        for s in av.shape:
-            size.append(int(2*s))
+        if len(av.shape) == 1:
+            size = [int(2 * av.shape[0])]
+        else:
+            # For stacks (..., y, x), pad only spatial axes.
+            size = [int(2 * av.shape[-2]), int(2 * av.shape[-1])]
     elif not hasattr(size, "__len__"):
-        size = [size]
+        if len(av.shape) == 1:
+            size = [size]
+        else:
+            size = [size, size]
 
-    assert len(av.shape) in [1, 2], "Only 1D and 2D arrays!"
-    assert len(av.shape) == len(
-        size), "`size` must have same length as `av.shape`!"
+    if len(av.shape) == 1:
+        assert len(size) == 1
+        return _pad_add_1d(av, size, stlen)
+
+    # 2D or stack of 2D: (..., y, x)
+    if len(size) == len(av.shape):
+        # Backwards-compatible input: ignore leading dims but require
+        # they are not being "padded" to a different size.
+        assert list(size[:-2]) == list(av.shape[:-2]), (
+            "For stacks, only the last two axes can be padded; leading "
+            "sizes must match `av.shape`."
+        )
+        size = list(size[-2:])
+
+    assert len(size) == 2, (
+        "`size` must be a scalar or a tuple/list of length 2 for 2D inputs "
+        "or stacks (..., y, x)."
+    )
 
     if len(av.shape) == 2:
         return _pad_add_2d(av, size, stlen)
-    else:
-        return _pad_add_1d(av, size, stlen)
+
+    # Stack: pad each 2D slice independently to preserve legacy behavior
+    # (i.e. same results as calling pad_add on each slice).
+    lead_shape = av.shape[:-2]
+    ny, nx = av.shape[-2], av.shape[-1]
+    out_y, out_x = int(size[0]), int(size[1])
+    av2 = av.reshape((-1, ny, nx))
+    out2 = xp.empty((av2.shape[0], out_y, out_x), dtype=av.dtype)
+    for i in range(av2.shape[0]):
+        out2[i] = _pad_add_2d(av2[i], [out_y, out_x], stlen)
+    return out2.reshape(lead_shape + (out_y, out_x))
 
 
 def _pad_add_1d(av, size, stlen):
@@ -162,18 +191,38 @@ def pad_rem(pv, size=None):
         Padded array `av` with pads appended to right and bottom.
     """
     if size is None:
-        size = list()
-        for s in pv.shape:
-            assert s % 2 == 0, "Uneven size; specify correct size of output!"
-            size.append(int(s/2))
+        if len(pv.shape) == 1:
+            assert pv.shape[0] % 2 == 0, (
+                "Uneven size; specify correct size of output!"
+            )
+            size = [int(pv.shape[0] / 2)]
+        else:
+            # For stacks (..., y, x), remove padding only on spatial axes.
+            assert pv.shape[-2] % 2 == 0 and pv.shape[-1] % 2 == 0, (
+                "Uneven size; specify correct size of output!"
+            )
+            size = [int(pv.shape[-2] / 2), int(pv.shape[-1] / 2)]
     elif not hasattr(size, "__len__"):
-        size = [size]
+        if len(pv.shape) == 1:
+            size = [size]
+        else:
+            size = [size, size]
 
-    assert len(pv.shape) in [1, 2], "Only 1D and 2D arrays!"
-    assert len(pv.shape) == len(
-        size), "`size` must have same length as `av.shape`!"
-
-    if len(pv.shape) == 2:
-        return pv[:size[0], :size[1]]
-    else:
+    if len(pv.shape) == 1:
+        assert len(size) == 1
         return pv[:size[0]]
+
+    if len(size) == len(pv.shape):
+        assert list(size[:-2]) == list(pv.shape[:-2]), (
+            "For stacks, only the last two axes can be unpadded; leading "
+            "sizes must match `pv.shape`."
+        )
+        size = list(size[-2:])
+
+    assert len(size) == 2, (
+        "`size` must be a scalar or a tuple/list of length 2 for 2D inputs "
+        "or stacks (..., y, x)."
+    )
+
+    # Works for 2D and stacks: keep leading axes, crop last two.
+    return pv[..., :size[0], :size[1]]

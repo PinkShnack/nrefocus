@@ -40,17 +40,18 @@ class RefocusPyFFTW(Refocus):
         """
         if padding:
             field = pad.pad_add(field)
+        spatial_axes = (field.ndim - 2, field.ndim - 1)
         # compute the input Fourier transform
         origin = pyfftw.empty_aligned(field.shape, dtype='complex128')
         fft_origin = pyfftw.empty_aligned(field.shape, dtype='complex128')
-        fft_obj = pyfftw.FFTW(origin, fft_origin, axes=(0, 1))
+        fft_obj = pyfftw.FFTW(origin, fft_origin, axes=spatial_axes)
         origin[:] = field
         fft_obj()
 
         # now setup the backward transform
         inv_input = pyfftw.empty_aligned(field.shape, dtype='complex128')
         inv_output = pyfftw.empty_aligned(field.shape, dtype='complex128')
-        self._ifft_obj = pyfftw.FFTW(inv_input, inv_output, axes=(0, 1),
+        self._ifft_obj = pyfftw.FFTW(inv_input, inv_output, axes=spatial_axes,
                                      direction="FFTW_BACKWARD",
                                      flags=["FFTW_DESTROY_INPUT"],
                                      threads=mp.cpu_count())
@@ -58,8 +59,9 @@ class RefocusPyFFTW(Refocus):
 
     def propagate(self, distance):
         fft_kernel = self.get_kernel(distance=distance)
-        xp.multiply(self.fft_origin, fft_kernel,
-                    out=self._ifft_obj.input_array)
+        # `out=` does not permit broadcasting; explicitly assign the
+        # broadcasted product into the input buffer.
+        self._ifft_obj.input_array[:] = self.fft_origin * fft_kernel
         refoc = self._ifft_obj()
         if self.padding:
             refoc = pad.pad_rem(refoc)
