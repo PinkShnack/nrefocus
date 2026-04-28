@@ -9,6 +9,9 @@ Refocus interface
 `Refocus` is a user-convenient interface for numerical refocusing.
 Each class implements refocusing for a specific dimensionality (1D or
 2D fields) using a specific method for refocusing (e.g. numpy FFT or FFTW).
+For 2D interfaces, inputs can be ``(y, x)`` or ``(..., y, x)``; when users
+pass an ``n``-dimensional input, the output array keeps that same
+``n``-dimensional shape.
 
 .. autofunction:: nrefocus.get_best_interface
 
