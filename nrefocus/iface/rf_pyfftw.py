@@ -1,6 +1,5 @@
 import multiprocessing as mp
 
-from .._ndarray_backend import xp
 import pyfftw
 
 from .. import pad
