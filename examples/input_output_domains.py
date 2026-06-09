@@ -6,8 +6,8 @@ data exists. The options are `'spatial'` (default, legacy behaviour) and
 `qpretrieve`'s `'output_domain'` to reduce the number of Fourier
 transforms in a given pipeline (see https://qpretrieve.readthedocs.io/).
 
-Each of the three subplots below produce the same spatial result when padding=False.
-Note that `qpretrieve` is not used in this example.
+Each of the three subplots below produce the same spatial result
+when padding=False. Note that `qpretrieve` is not used in this example.
 
 """
 import matplotlib.pyplot as plt
