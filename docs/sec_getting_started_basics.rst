@@ -1,8 +1,8 @@
-===================
-Basics of qpretrieve
-===================
-
 .. _sec_getting_started_basics:
+
+==================
+Basics of nrefocus
+==================
 
 This section gives a minimal example for numerical refocussing of a single 2D
 complex field with ``nrefocus``.

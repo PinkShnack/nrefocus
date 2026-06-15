@@ -39,6 +39,17 @@ class RefocusNumpy1D(Refocus):
               :math:`\exp(-idk_\mathrm{x}^2/2k_\mathrm{m})`
         padding: bool
             Wheter to perform boundary-padding with linear ramp
+        input_domain: str
+            Domain of `field`: either ``"spatial"`` or ``"fourier"``.
+            See the Refocus base class for more information.
+
+            .. versionadded:: 0.7.1
+        output_domain: str
+            Domain of the propagated result: either ``"spatial"`` or
+            ``"fourier"``.
+            See the Refocus base class for more information.
+
+            .. versionadded:: 0.7.1
         """
         super(RefocusNumpy1D, self).__init__(
             field=field,
