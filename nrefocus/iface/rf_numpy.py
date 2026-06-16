@@ -32,11 +32,12 @@ class RefocusNumpy(Refocus):
         """
         if padding:
             field = pad.pad_add(field)
-        return xp.fft.fft2(field)
+        # Allow stacks shaped (..., y, x) by always transforming the last axes.
+        return xp.fft.fft2(field, axes=(-2, -1))
 
     def propagate(self, distance):
         fft_kernel = self.get_kernel(distance=distance)
-        refoc = xp.fft.ifft2(self.fft_origin * fft_kernel)
+        refoc = xp.fft.ifft2(self.fft_origin * fft_kernel, axes=(-2, -1))
         if self.padding:
             refoc = pad.pad_rem(refoc)
         return refoc
