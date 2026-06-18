@@ -12,7 +12,13 @@ axes are treated as batch dimensions. If you pass an
 ``n``-dimensional input, you get an output array with the same
 ``n``-dimensional shape.
 
-For a further example, check out the :ref:`sec_examples`.
+.. admonition:: `nrefocus.refocus_stack`
+
+	The convenience functions `nrefocus.refocus_stack` and
+	`nrefocus.autofocus_stack` may be removed in the
+	future, as  `nrefocus` now accepts in 3D data. See
+	`Issue #28 <https://github.com/RI-imaging/nrefocus/issues/28>`_
+
 
 .. code-block:: python
 
@@ -33,3 +39,5 @@ For a further example, check out the :ref:`sec_examples`.
     )
     refocused = rf.propagate(distance=2.13 * pixel_size)
     print(refocused.shape)  # (4, 128, 96)
+
+For a further example, check out the :ref:`sec_examples`.
