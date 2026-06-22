@@ -43,13 +43,13 @@ class RefocusNumpy1D(Refocus):
             Domain of `field`: either ``"spatial"`` or ``"fourier"``.
             See the Refocus base class for more information.
 
-            .. versionadded:: 0.7.1
+            .. versionadded:: 0.8.0
         output_domain: str
             Domain of the propagated result: either ``"spatial"`` or
             ``"fourier"``.
             See the Refocus base class for more information.
 
-            .. versionadded:: 0.7.1
+            .. versionadded:: 0.8.0
         """
         super(RefocusNumpy1D, self).__init__(
             field=field,

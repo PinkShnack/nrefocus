@@ -51,14 +51,14 @@ def refocus(field, d, nm, res, method="helmholtz", padding=True,
         If ``"fourier"``, `field` is treated as a precomputed Fourier-domain
         field and the initial FFT step is skipped.
 
-        .. versionadded:: 0.7.1
+        .. versionadded:: 0.8.0
     output_domain : str
         Either ``"spatial"`` or ``"fourier"``. Default is ``"spatial"`` and
         outputs inverse transformed `field` as in older nrefocus versions.
         If ``"fourier"``, the propagated Fourier-domain field is
         returned directly.
 
-        .. versionadded:: 0.7.1
+        .. versionadded:: 0.8.0
 
     Returns
     -------
@@ -192,12 +192,12 @@ def refocus_stack(fieldstack, d, nm, res, method="helmholtz",
         Either ``"spatial"`` or ``"fourier"``. Passed through to
         :func:`refocus`.
 
-        .. versionadded:: 0.7.1
+        .. versionadded:: 0.8.0
     output_domain : str
         Either ``"spatial"`` or ``"fourier"``. Passed through to
         :func:`refocus`.
 
-        .. versionadded:: 0.7.1
+        .. versionadded:: 0.8.0
 
     Returns
     -------

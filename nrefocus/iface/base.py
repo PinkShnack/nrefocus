@@ -50,7 +50,7 @@ class Refocus(ABC):
             internally so that ``fft_origin`` matches the unshifted layout
             expected by :func:`numpy.fft.fftfreq`-based kernels.
 
-            .. versionadded:: 0.7.1
+            .. versionadded:: 0.8.0
         output_domain: str
             Domain of the propagated result: either ``"spatial"`` or
             ``"fourier"``. When ``"fourier"``, the result is returned in
@@ -58,7 +58,7 @@ class Refocus(ABC):
             ``fftshift`` applied after kernel multiplication so the caller
             receives data in the same convention as the input.
 
-            .. versionadded:: 0.7.1
+            .. versionadded:: 0.8.0
 
         """
         super(Refocus, self).__init__()

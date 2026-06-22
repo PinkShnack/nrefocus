@@ -4,7 +4,7 @@
 Input and Output Domains
 ========================
 
-Since version 0.7.1, :func:`nrefocus.refocus`, :func:`nrefocus.refocus_stack`,
+Since version 0.8.0, :func:`nrefocus.refocus`, :func:`nrefocus.refocus_stack`,
 and all :class:`.Refocus` subclasses accept ``input_domain`` and
 ``output_domain`` keyword arguments that control whether the field is
 transformed to/from the Fourier domain inside nrefocus or whether the user
