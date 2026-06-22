@@ -36,7 +36,7 @@ def test_refocus_artifact_fourier_output_returns_shifted_fft(dummy_field):
                        rtol=1e-12, atol=1e-12)
 
 
-def test_refocus_artifact_matches_legacy_field_path(dummy_field):
+def test_refocus_artifact_matches_default_field_path(dummy_field):
     """Old and new pipelines should give the same results"""
     artifact = DummyArtifact(dummy_field)
     kwargs = dict(d=2.13, nm=1.533, res=8.25,
@@ -50,7 +50,7 @@ def test_refocus_artifact_matches_legacy_field_path(dummy_field):
                        rtol=1e-12, atol=1e-12)
 
 
-def test_refocus_artifact_matches_legacy_field_real_data(cell_field):
+def test_refocus_artifact_matches_default_field_real_data(cell_field):
     """Old and new pipelines should give the same results"""
     artifact = DummyArtifact(cell_field)
     kwargs = dict(d=2.13, nm=1.533, res=8.25,

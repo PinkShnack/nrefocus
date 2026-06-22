@@ -1,7 +1,7 @@
 """Specifying `input_domain` / `output_domain` in nrefocus.
 
 As of version 0.6.2, users can specify in which domain the input and output
-data exists. The options are `'spatial'` (default, legacy behaviour) and
+data exists. The options are `'spatial'` (default behaviour) and
 `'fourier'`. These can be used in conjunction with
 `qpretrieve`'s `'output_domain'` to reduce the number of Fourier
 transforms in a given pipeline (see https://qpretrieve.readthedocs.io/).
@@ -54,9 +54,9 @@ amp = [
     np.abs(refocused_from_fft_out),
 ]
 titles = [
-    "(default)\ninput_domain='spatial'\noutput_domain='spatial'",
-    "\ninput_domain='fourier'\noutput_domain='spatial'",
-    "(+ manual iFFT)\ninput_domain='fourier'\noutput_domain='spatial'",
+    "input_domain='spatial'\noutput_domain='spatial'",
+    "input_domain='fourier'\noutput_domain='spatial'",
+    "input_domain='fourier'\noutput_domain='spatial' + manual iFFT",
 ]
 
 vmin = min(a.min() for a in amp)
