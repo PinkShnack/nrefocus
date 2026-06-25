@@ -58,10 +58,14 @@ class RefocusPyFFTW(Refocus):
 
     def propagate(self, distance):
         fft_kernel = self.get_kernel(distance=distance)
+        fft_prop = self.fft_origin * fft_kernel
+        if self.output_domain == "fourier":
+            return pyfftw.interfaces.numpy_fft.fftshift(fft_prop)
+
         # `out=` does not permit broadcasting; explicitly assign the
         # broadcasted product into the input buffer.
-        self._ifft_obj.input_array[:] = self.fft_origin * fft_kernel
+        self._ifft_obj.input_array[:] = fft_prop
         refoc = self._ifft_obj()
-        if self.padding:
+        if self.input_domain == "spatial" and self.padding:
             refoc = pad.pad_rem(refoc)
         return refoc

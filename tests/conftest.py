@@ -39,3 +39,10 @@ def cell_field(fname="HL60_field.zip"):
 
     field = real + 1j * imag
     return field
+
+
+@pytest.fixture()
+def dummy_field():
+    """Small synthetic complex field for fast unit tests."""
+    rng = np.random.default_rng(0)
+    return rng.normal(size=(16, 12)) + 1j * rng.normal(size=(16, 12))

@@ -1,8 +1,8 @@
+.. _sec_getting_started_basics:
+
 ==================
 Basics of nrefocus
 ==================
-
-.. _sec_getting_started_basics:
 
 This section gives a minimal example for numerical refocussing of a single 2D
 complex field with ``nrefocus``.

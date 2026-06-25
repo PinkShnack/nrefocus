@@ -36,8 +36,13 @@ class RefocusNumpy(Refocus):
         return xp.fft.fft2(field, axes=(-2, -1))
 
     def propagate(self, distance):
+        """Propagate the field at `distance` in the requested domain."""
         fft_kernel = self.get_kernel(distance=distance)
-        refoc = xp.fft.ifft2(self.fft_origin * fft_kernel, axes=(-2, -1))
-        if self.padding:
+        fft_prop = self.fft_origin * fft_kernel
+        if self.output_domain == "fourier":
+            return xp.fft.fftshift(fft_prop, axes=(-2, -1))
+
+        refoc = xp.fft.ifft2(fft_prop, axes=(-2, -1))
+        if self.input_domain == "spatial" and self.padding:
             refoc = pad.pad_rem(refoc)
         return refoc

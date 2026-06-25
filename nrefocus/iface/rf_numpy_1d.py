@@ -10,7 +10,8 @@ class RefocusNumpy1D(Refocus):
     backend_incompatible = None
 
     def __init__(self, field, wavelength, pixel_size, medium_index=1.3333,
-                 distance=0, kernel="helmholtz", padding=True):
+                 distance=0, kernel="helmholtz", padding=True,
+                 input_domain="spatial", output_domain="spatial"):
         r"""Refocus a 1D field with numpy
 
         .. versionadded:: 0.3.0
@@ -38,6 +39,17 @@ class RefocusNumpy1D(Refocus):
               :math:`\exp(-idk_\mathrm{x}^2/2k_\mathrm{m})`
         padding: bool
             Wheter to perform boundary-padding with linear ramp
+        input_domain: str
+            Domain of `field`: either ``"spatial"`` or ``"fourier"``.
+            See the Refocus base class for more information.
+
+            .. versionadded:: 0.8.0
+        output_domain: str
+            Domain of the propagated result: either ``"spatial"`` or
+            ``"fourier"``.
+            See the Refocus base class for more information.
+
+            .. versionadded:: 0.8.0
         """
         super(RefocusNumpy1D, self).__init__(
             field=field,
@@ -47,6 +59,8 @@ class RefocusNumpy1D(Refocus):
             distance=distance,
             kernel=kernel,
             padding=padding,
+            input_domain=input_domain,
+            output_domain=output_domain,
         )
 
     def _init_fft(self, field, padding):
@@ -108,7 +122,11 @@ class RefocusNumpy1D(Refocus):
             Initial 1D field refocused at `distance`
         """
         fft_kernel = self.get_kernel(distance=distance)
-        refoc = xp.fft.ifft(self.fft_origin * fft_kernel)
-        if self.padding:
+        fft_prop = self.fft_origin * fft_kernel
+        if self.output_domain == "fourier":
+            return xp.fft.fftshift(fft_prop)
+
+        refoc = xp.fft.ifft(fft_prop)
+        if self.input_domain == "spatial" and self.padding:
             refoc = pad.pad_rem(refoc)
         return refoc

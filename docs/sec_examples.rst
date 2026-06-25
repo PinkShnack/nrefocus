@@ -1,3 +1,5 @@
+.. _sec_examples:
+
 ========
 Examples
 ========
@@ -9,3 +11,4 @@ Examples
 .. fancy_include:: refocus_cell.py
 .. fancy_include:: compare_metrics.py
 .. fancy_include:: refocus_stack.py
+.. fancy_include:: input_output_domains.py

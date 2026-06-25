@@ -56,8 +56,11 @@ class RefocusCupy(Refocus):
         fft_kernel = self.get_kernel(distance=distance)
         fft_gpu = xp.asarray(self.fft_origin * fft_kernel)
 
+        if self.output_domain == "fourier":
+            return xp.fft.fftshift(fft_gpu, axes=(-2, -1))
+
         with sp.fft.set_backend(cufft):
             refoc = sp.fft.ifft2(fft_gpu, axes=(-2, -1))
-        if self.padding:
+        if self.input_domain == "spatial" and self.padding:
             refoc = pad.pad_rem(refoc)
         return refoc

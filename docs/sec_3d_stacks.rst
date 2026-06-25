@@ -39,3 +39,5 @@ axes are treated as batch dimensions. If you pass an
     )
     refocused = rf.propagate(distance=2.13 * pixel_size)
     print(refocused.shape)  # (4, 128, 96)
+
+For a further example, check out the :ref:`sec_examples`.

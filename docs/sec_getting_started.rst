@@ -10,3 +10,4 @@ Getting started
   sec_getting_started_basics
   sec_ndarray_backend
   sec_3d_stacks
+  sec_input_output_domains

@@ -10,7 +10,8 @@ from ..roi_handling import parse_roi
 
 class Refocus(ABC):
     def __init__(self, field, wavelength, pixel_size, medium_index=1.3333,
-                 distance=0, kernel="helmholtz", padding=True):
+                 distance=0, kernel="helmholtz", padding=True,
+                 input_domain="spatial", output_domain="spatial"):
         r"""
         Parameters
         ----------
@@ -21,6 +22,7 @@ class Refocus(ABC):
             the final two dimensions are always assumed to be spatial.
             If an ``n``-dimensional input is provided, the output keeps
             the same shape.
+            The interpretation of `field` is controlled by `input_domain`.
         wavelength: float
             Wavelength of the used light [m]
         pixel_size: float
@@ -40,8 +42,37 @@ class Refocus(ABC):
               :math:`\exp(-id(k_\mathrm{x}^2+k_\mathrm{y}^2)/2k_\mathrm{m})`
         padding: bool
             Whether to perform boundary-padding with linear ramp
+        input_domain: str
+            Domain of `field`: either ``"spatial"`` or ``"fourier"``.
+            When ``"fourier"``, `field` must be in the **fftshifted**
+            convention (DC at the centre of the array, as returned by
+            :func:`numpy.fft.fftshift`). An ``ifftshift`` is applied
+            internally so that ``fft_origin`` matches the unshifted layout
+            expected by :func:`numpy.fft.fftfreq`-based kernels.
+
+            .. versionadded:: 0.8.0
+        output_domain: str
+            Domain of the propagated result: either ``"spatial"`` or
+            ``"fourier"``. When ``"fourier"``, the result is returned in
+            the **fftshifted** convention (DC at the centre) via an
+            ``fftshift`` applied after kernel multiplication so the caller
+            receives data in the same convention as the input.
+
+            .. versionadded:: 0.8.0
+
         """
         super(Refocus, self).__init__()
+        if input_domain not in ("spatial", "fourier"):
+            raise ValueError(
+                "`input_domain` must be 'spatial' or 'fourier'.")
+        if output_domain not in ("spatial", "fourier"):
+            raise ValueError(
+                "`output_domain` must be 'spatial' or 'fourier'.")
+        # `input_domain` selects whether `field` is spatial or Fourier data.
+        self.input_domain = input_domain
+        # `output_domain` selects whether `propagate()` returns the spatial
+        # field or the propagated Fourier field.
+        self.output_domain = output_domain
         self.wavelength = wavelength
         self.pixel_size = pixel_size
         self.medium_index = medium_index
@@ -50,11 +81,17 @@ class Refocus(ABC):
         self.padding = padding
         self.origin = field
         self.backend_check()
-        self.fft_origin = self._init_fft(field, padding)
+        if input_domain == "spatial":
+            self.fft_origin = self._init_fft(field, padding)
+        else:
+            # field is assumed to be in fftshifted convention (DC at centre).
+            # ifftshift moves DC back to (0, 0) so fft_origin is in the same
+            # unshifted layout that fftfreq-based kernels expect.
+            self.fft_origin = xp.fft.ifftshift(field)
 
     @property
     def shape(self):
-        """Shape of the padded input field or Fourier transform"""
+        """Shape of the internal Fourier representation."""
         return self.fft_origin.shape
 
     @abstractmethod
@@ -270,4 +307,13 @@ class Refocus(ABC):
         -----
         Any subclass should perform padding with
         :func:`nrefocus.pad.pad_rem` during initialization.
+
+        All subclasses follow the same Fourier shift convention when
+        `self.output_domain == "fourier"`:
+        ``fft_origin`` and the propagation kernel are both in unshifted
+        layout (DC at index 0, matching :func:`numpy.fft.fftfreq`).
+        When ``output_domain="fourier"``, subclasses must apply
+        ``fftshift`` before returning so the result is in the fftshifted
+        convention (DC at centre), consistent with ``input_domain`` and with
+        :func:`qpretrieve.fourier.FourierFieldArtifact.finalize`.
         """
